@@ -225,11 +225,14 @@ const styles = StyleSheet.create({
   },
   gridContainer: {
     paddingVertical: 12,
+    // ✅ Dùng margin âm để bù trừ cho paddingHorizontal 8px (khoảng cách bên ngoài)
+    marginHorizontal: -8,
   },
-  // ✅ Style đã fix cho bố cục 2 cột (All products)
   gridItem: {
-    width: "50%",
-    paddingHorizontal: 4,
-    marginBottom: 10,
+    // ✅ KHÔNG DÙNG width: '50%' hay flex: 1. Sử dụng flexGrow để FlatList tự tính toán
+    flexGrow: 1,
+    width: "50%", // Chỉ định rõ chiều rộng
+    paddingHorizontal: 8, // ✅ Tạo khoảng cách 8px ở hai bên mỗi item (tạo thành 16px giữa hai item)
+    marginBottom: 12, // Khoảng cách giữa các hàng
   },
 });

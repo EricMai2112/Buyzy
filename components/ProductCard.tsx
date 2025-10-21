@@ -10,7 +10,6 @@ export default function ProductCard({
   onPress?: () => void;
 }) {
   return (
-    // ✅ Giữ lại TouchableOpacity và style s.card
     <TouchableOpacity style={s.card} onPress={onPress}>
       <Image
         source={{ uri: product.image_url || "https://via.placeholder.com/150" }}
@@ -29,13 +28,12 @@ export default function ProductCard({
 
 const s = StyleSheet.create({
   card: {
-    width: 150,
-    margin: 5,
     backgroundColor: "#fff",
     borderRadius: 10,
     padding: 10,
     elevation: 2,
-    flexGrow: 1,
+    margin: 5,
+    flex: 1,
   },
   img: {
     width: "100%",
