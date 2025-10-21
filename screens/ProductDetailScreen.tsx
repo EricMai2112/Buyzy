@@ -7,11 +7,15 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from "react-native";
 import Header from "../components/Header";
 import { fetchProductById } from "../api/api";
 import { Product } from "../types";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { addToCart } from "../api/cartApi"; // ⬅️ IMPORT API
+
+// ❌ XÓA HẾT MOCK LOGIC Ở ĐÂY
 
 export default function ProductDetailScreen() {
   const route = useRoute<any>();
@@ -28,6 +32,21 @@ export default function ProductDetailScreen() {
       }
     })();
   }, []);
+
+  // ✅ SỬ DỤNG API THỰC TẾ
+  const handleAddToCart = async () => {
+    if (product && product._id) {
+      try {
+        await addToCart(product._id, 1); // Gọi API thêm vào giỏ hàng
+        Alert.alert("Success", `${product.name} added to cart successfully!`);
+      } catch (e) {
+        Alert.alert(
+          "Error",
+          "Failed to add product to cart. Please check your network and backend."
+        );
+      }
+    }
+  };
 
   if (!product)
     return (
@@ -77,11 +96,8 @@ export default function ProductDetailScreen() {
       </ScrollView>
 
       <View style={styles.bottomBar}>
-        <TouchableOpacity
-          style={styles.cartBtn}
-          onPress={() => navigation.navigate("Cart")}
-        >
-          <Text style={{ color: "#fff" }}>Cart</Text>
+        <TouchableOpacity style={styles.cartBtn} onPress={handleAddToCart}>
+          <Text style={{ color: "#fff", fontWeight: "700" }}>Add to Cart</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.buyBtn}

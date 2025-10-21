@@ -1,3 +1,5 @@
+// CheckoutScreen.tsx (FINAL VERSION)
+
 import React, { useState } from "react";
 import {
   View,
@@ -7,10 +9,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
 } from "react-native";
 import Header from "../components/Header";
 import { useNavigation, useRoute } from "@react-navigation/native";
-
+import { clearCart } from "../api/cartApi";
+import { createOrder } from "../api/orderApi";
 export default function CheckoutScreen() {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
@@ -18,14 +22,60 @@ export default function CheckoutScreen() {
   const product = route.params?.product;
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const total = product
     ? product.price
     : items?.reduce((s: any, i: any) => s + i.price * i.qty, 0) || 0;
 
-  const handlePlaceOrder = () => {
-    // here call backend to create order
-    navigation.replace("Success", { orderId: "ORDER123", total });
+  const orderItems = product
+    ? [
+        {
+          product_id: product._id,
+          name: product.name,
+          price: product.price,
+          qty: 1,
+          image_url: product.image_url,
+        },
+      ]
+    : items;
+
+  const handlePlaceOrder = async () => {
+    if (isPlacingOrder) return;
+
+    if (!name || !address) {
+      Alert.alert("Error", "Please fill in your full name and address.");
+      return;
+    }
+
+    const orderData = {
+      items: orderItems,
+      total: total,
+      shipping_address: address,
+    };
+
+    setIsPlacingOrder(true);
+
+    try {
+      const result = await createOrder(orderData);
+
+      if (items) {
+        await clearCart();
+      }
+
+      navigation.replace("Success", {
+        orderId: result.orderId,
+        total: result.total.toFixed(2),
+      });
+    } catch (e: any) {
+      console.error("Place Order Error:", e.message);
+      Alert.alert(
+        "Error",
+        e.message || "An unknown error occurred during checkout."
+      );
+
+      setIsPlacingOrder(false);
+    }
   };
 
   return (
@@ -40,12 +90,14 @@ export default function CheckoutScreen() {
           style={styles.input}
           value={name}
           onChangeText={setName}
+          editable={!isPlacingOrder}
         />
         <TextInput
           placeholder="Address"
           style={styles.input}
           value={address}
           onChangeText={setAddress}
+          editable={!isPlacingOrder}
         />
 
         <View style={{ marginTop: 20 }}>
@@ -59,12 +111,18 @@ export default function CheckoutScreen() {
         <View style={{ marginTop: 30 }}>
           <Text style={{ fontWeight: "700", fontSize: 16 }}>Order Summary</Text>
           <View style={{ marginTop: 10 }}>
-            <Text>Total: ${total}</Text>
+            <Text>Total: ${total.toFixed(2)}</Text>
           </View>
         </View>
 
-        <TouchableOpacity style={styles.placeBtn} onPress={handlePlaceOrder}>
-          <Text style={{ color: "#fff", fontWeight: "700" }}>Place order</Text>
+        <TouchableOpacity
+          style={[styles.placeBtn, isPlacingOrder && styles.disabledBtn]}
+          onPress={handlePlaceOrder}
+          disabled={isPlacingOrder}
+        >
+          <Text style={{ color: "#fff", fontWeight: "700" }}>
+            {isPlacingOrder ? "Placing Order..." : "Place order"}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -84,5 +142,8 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 10,
     alignItems: "center",
+  },
+  disabledBtn: {
+    backgroundColor: "#ccc",
   },
 });

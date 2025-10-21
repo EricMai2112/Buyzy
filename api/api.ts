@@ -1,4 +1,4 @@
-const BASE = "http://172.16.3.202:5000/api";
+const BASE = "http://192.168.0.111:5000/api";
 export async function fetchProducts() {
   try {
     const res = await fetch(`${BASE}/products`);

@@ -1,13 +1,13 @@
 import express, { Request, Response } from "express";
 import { MongoClient, Db, ObjectId } from "mongodb";
 import cors from "cors";
-import productsRouter from "./src/routes/products";
-import cartsRouter from "./src/routes/carts";
-import ordersRouter from "./src/routes/orders";
-import feedbacksRouter from "./src/routes/feedbacks";
+import productsRouter from "./routes/productRoute";
+import cartsRouter from "./routes/cartRoute";
+import ordersRouter from "./routes/orderRoute";
+import feedbacksRouter from "./routes/feedbackRoute";
 
 const app = express();
-app.use(cors({ origin: "http://192.168.1.x:19006" })); // Thay IP Expo
+app.use(cors({ origin: "http://172.16.3.202:19006" })); // Thay IP Expo
 app.use(express.json());
 
 const url = process.env.MONGO_URL || "mongodb://localhost:27017";
