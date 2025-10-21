@@ -10,6 +10,7 @@ export default function ProductCard({
   onPress?: () => void;
 }) {
   return (
+    // ✅ Giữ lại TouchableOpacity và style s.card
     <TouchableOpacity style={s.card} onPress={onPress}>
       <Image
         source={{ uri: product.image_url || "https://via.placeholder.com/150" }}
@@ -28,14 +29,21 @@ export default function ProductCard({
 
 const s = StyleSheet.create({
   card: {
-    width: 140,
-    marginRight: 12,
+    width: 150,
+    margin: 5,
     backgroundColor: "#fff",
     borderRadius: 10,
     padding: 10,
     elevation: 2,
+    flexGrow: 1,
   },
-  img: { width: "100%", height: 90, borderRadius: 8, marginBottom: 8 },
+  img: {
+    width: "100%",
+    height: 90,
+    borderRadius: 8,
+    marginBottom: 8,
+    resizeMode: "contain",
+  },
   name: { fontSize: 14, fontWeight: "600", marginBottom: 6 },
   row: { flexDirection: "row", justifyContent: "space-between" },
   price: { fontWeight: "700", color: "#2a9d8f" },
