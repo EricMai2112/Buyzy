@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -13,10 +13,16 @@ import {
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
 import CategoryChip from "../components/CategoryChip";
+
 import { fetchProducts } from "../api/api";
 import { fetchCategories, Category } from "../api/categoryApi";
 import { Product } from "../types";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+
+interface PriceFilters {
+  minPrice?: number;
+  maxPrice?: number;
+}
 
 const ALL_CATEGORY: Category = {
   _id: "all" as any,
@@ -25,6 +31,9 @@ const ALL_CATEGORY: Category = {
 };
 
 export default function HomeScreen() {
+  const navigation = useNavigation<any>();
+  const route = useRoute<any>();
+
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -33,34 +42,54 @@ export default function HomeScreen() {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const navigation = useNavigation<any>();
+  const [currentFilters, setCurrentFilters] = useState<PriceFilters>({});
+
+  const loadData = useCallback(async (filters: PriceFilters = {}) => {
+    setLoading(true);
+    try {
+      const { minPrice, maxPrice } = filters;
+
+      const [productData, categoryData] = await Promise.all([
+        fetchProducts(minPrice, maxPrice),
+        fetchCategories(),
+      ]);
+
+      setAllProducts(productData);
+      setDisplayedProducts(productData);
+
+      const categoriesWithAll = [ALL_CATEGORY, ...categoryData];
+      setCategories(categoriesWithAll);
+    } catch (error) {
+      console.error("Lỗi tải dữ liệu:", error);
+      Alert.alert(
+        "Lỗi",
+        "Không thể tải dữ liệu. Vui lòng kiểm tra kết nối API."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const [productData, categoryData] = await Promise.all([
-          fetchProducts(),
-          fetchCategories(),
-        ]);
-
-        setAllProducts(productData);
-        setDisplayedProducts(productData);
-
-        const categoriesWithAll = [ALL_CATEGORY, ...categoryData];
-        setCategories(categoriesWithAll);
-      } catch (error) {
-        console.error("Lỗi tải dữ liệu:", error);
-        Alert.alert(
-          "Lỗi",
-          "Không thể tải dữ liệu. Vui lòng kiểm tra kết nối API."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
     loadData();
-  }, []);
+  }, [loadData]);
+
+  useEffect(() => {
+    const filters = route.params?.filters as PriceFilters;
+
+    if (filters) {
+      console.log("Applying Price Filters:", filters);
+
+      setCurrentFilters(filters);
+
+      loadData(filters);
+
+      navigation.setParams({ filters: undefined });
+
+      setSelectedCategoryId("all");
+      setSearchQuery("");
+    }
+  }, [route.params?.filters, loadData, navigation]);
 
   useEffect(() => {
     const productsByCategory =
@@ -174,6 +203,19 @@ export default function HomeScreen() {
                         ?.name || "Category"
                     }`}
               </Text>
+              {/* Hiển thị thông tin bộ lọc đang áp dụng */}
+              {currentFilters.minPrice || currentFilters.maxPrice ? (
+                <Text style={styles.filterAppliedText}>
+                  Filtered by Price:
+                  {currentFilters.minPrice
+                    ? ` $${currentFilters.minPrice}`
+                    : " Min"}
+                  {" - "}
+                  {currentFilters.maxPrice
+                    ? `$${currentFilters.maxPrice}`
+                    : " Max"}
+                </Text>
+              ) : null}
 
               {displayedProducts.length === 0 ? (
                 <Text style={{ marginTop: 10 }}>
@@ -210,6 +252,13 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#fff",
     borderRadius: 10,
+  },
+  filterAppliedText: {
+    // ✅ Style mới cho thông báo bộ lọc
+    fontSize: 14,
+    color: "#2a9d8f",
+    marginTop: 5,
+    fontWeight: "600",
   },
   gridContainer: {
     paddingVertical: 12,

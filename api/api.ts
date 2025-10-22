@@ -1,19 +1,42 @@
 import { Product } from "../types";
 
 const BASE = "http://192.168.0.186:5000/api";
-export async function fetchProducts(categoryId?: string): Promise<Product[]> {
+
+export async function fetchProducts(
+  minPrice?: number,
+  maxPrice?: number,
+  categoryId?: string
+): Promise<Product[]> {
   try {
     let url = `${BASE}/products`;
-    // ✅ THÊM LOGIC LỌC SẢN PHẨM Ở BACKEND
+    const params = [];
+
     if (categoryId) {
-      // LƯU Ý: Backend cần hỗ trợ endpoint này (GET /api/products?category=...)
-      url = `${BASE}/products?category=${categoryId}`;
+      params.push(`category=${categoryId}`);
     }
 
+    if (minPrice !== undefined && minPrice !== null) {
+      params.push(`minPrice=${minPrice}`);
+    }
+
+    if (maxPrice !== undefined && maxPrice !== null) {
+      params.push(`maxPrice=${maxPrice}`);
+    }
+
+    if (params.length > 0) {
+      url += `?${params.join("&")}`;
+    }
+    console.log("Fetching products from URL:", url);
+
     const res = await fetch(url);
+
+    if (!res.ok) {
+      throw new Error(`API call failed with status: ${res.status}`);
+    }
+
     return await res.json();
   } catch (err) {
-    console.error(err);
+    console.error("Error in fetchProducts:", err);
     return [];
   }
 }
