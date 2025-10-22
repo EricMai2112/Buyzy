@@ -1,6 +1,6 @@
 // src/api/orderApi.ts (Sửa lỗi response parsing)
 
-const API_BASE_URL = "http://192.168.0.111:5000/api";
+const API_BASE_URL = "http://192.168.0.186:5000/api";
 
 export async function createOrder(
   orderData: any

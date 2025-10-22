@@ -1,6 +1,6 @@
 import { Product } from "../types";
 
-const BASE = "http://192.168.0.111:5000/api";
+const BASE = "http://192.168.0.186:5000/api";
 export async function fetchProducts(categoryId?: string): Promise<Product[]> {
   try {
     let url = `${BASE}/products`;

@@ -1,3 +1,4 @@
+// CartScreen.tsx
 import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
@@ -9,79 +10,89 @@ import {
   Alert,
 } from "react-native";
 import Header from "../components/Header";
+// Giả định CartItem type đã được mở rộng để bao gồm color/size
 import { CartItem } from "../types";
-import { useNavigation, useIsFocused } from "@react-navigation/native"; // ⬅️ Cần useIsFocused
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { fetchCartItems, updateCartItemQuantity } from "../api/cartApi"; // ⬅️ IMPORT API
-
-// ❌ XÓA const initial: CartItem[] = [];
+import { fetchCartItems, updateCartItemQuantity } from "../api/cartApi";
 
 export default function CartScreen() {
-  const isFocused = useIsFocused(); // Dùng để refresh dữ liệu khi màn hình được focus
+  const isFocused = useIsFocused();
   const [items, setItems] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation<any>();
 
-  // ✅ HÀM TẢI DỮ LIỆU GIỎ HÀNG THỰC TẾ
+  // Hàm tải dữ liệu giỏ hàng từ API
   const loadCart = useCallback(async () => {
     setLoading(true);
     try {
       const data = await fetchCartItems();
       setItems(data);
     } catch (e) {
-      console.error("Could not load cart:", e);
-      Alert.alert("Error", "Failed to load cart data.");
+      Alert.alert("Error", "Could not load cart.");
       setItems([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // ✅ GỌI HÀM TẢI DỮ LIỆU KHI MÀN HÌNH ĐƯỢC FOCUS
   useEffect(() => {
     if (isFocused) {
       loadCart();
     }
   }, [isFocused, loadCart]);
 
-  // ✅ HÀM CẬP NHẬT SỐ LƯỢNG VÀ GỌI API
-  const handleUpdateQuantity = async (productId: string, delta: number) => {
-    const currentItem = items.find((i) => i.product_id === productId);
-    if (!currentItem) return;
+  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
 
-    const newQty = currentItem.qty + delta;
+  // Cập nhật lại logic hàm này trong CartScreen.tsx:
+  const handleUpdateQuantity = async (
+    itemToUpdate: CartItem,
+    delta: number
+  ) => {
+    const newQty = itemToUpdate.qty + delta;
+
+    // Kiểm tra số lượng tối thiểu để xóa sản phẩm khỏi giỏ hàng
+    if (newQty < 0) return;
 
     try {
-      if (newQty <= 0) {
-        // Backend cần xử lý việc xóa sản phẩm khi gửi qty = 0
-        await updateCartItemQuantity(productId, 0);
-      } else {
-        await updateCartItemQuantity(productId, newQty);
-      }
-
-      loadCart(); // Tải lại giỏ hàng để cập nhật UI
+      // Trích xuất các trường cần thiết để xác định và cập nhật item trong API
+      await updateCartItemQuantity({
+        product_id: itemToUpdate.product_id,
+        qty: newQty,
+        color: itemToUpdate.color,
+        size: itemToUpdate.size,
+      });
+      loadCart();
     } catch (e) {
       Alert.alert("Error", "Failed to update quantity.");
     }
   };
 
-  // ✅ COMPONENT HIỂN THỊ ITEM TRONG GIỎ HÀNG (đã thêm nút +/-)
   const CartListItem = ({ item }: { item: CartItem }) => (
     <View style={styles.row}>
       <View style={{ flex: 1 }}>
         <Text style={{ fontWeight: "700" }}>{item.name}</Text>
+
+        {(item.color || item.size) && (
+          <Text style={styles.variantText}>
+            {item.color ? `Màu: ${item.color}` : ""}
+            {item.color && item.size ? ", " : ""}
+            {item.size ? `Kích cỡ: ${item.size}` : ""}
+          </Text>
+        )}
+
         <Text>${item.price.toFixed(2)}</Text>
       </View>
       <View style={styles.qtyContainer}>
         <TouchableOpacity
-          onPress={() => handleUpdateQuantity(item.product_id, -1)}
+          onPress={() => handleUpdateQuantity(item, -1)}
           style={styles.qtyBtn}
         >
           <Ionicons name="remove" size={16} color="#333" />
         </TouchableOpacity>
         <Text style={styles.qtyText}>{item.qty}</Text>
         <TouchableOpacity
-          onPress={() => handleUpdateQuantity(item.product_id, 1)}
+          onPress={() => handleUpdateQuantity(item, 1)}
           style={styles.qtyBtn}
         >
           <Ionicons name="add" size={16} color="#333" />
@@ -90,24 +101,31 @@ export default function CartScreen() {
     </View>
   );
 
-  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+  if (loading) {
+    return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <Text style={{ textAlign: "center", marginTop: 40 }}>
+          Loading cart...
+        </Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Header title="Cart" />
       <View style={{ flex: 1, padding: 16 }}>
-        {loading ? (
-          <Text style={{ textAlign: "center", marginTop: 20 }}>
-            Loading cart...
-          </Text>
-        ) : items.length === 0 ? (
+        {items.length === 0 ? (
           <View style={{ alignItems: "center", marginTop: 40 }}>
             <Text>Your cart is empty</Text>
           </View>
         ) : (
           <FlatList
             data={items}
-            keyExtractor={(i) => i.product_id}
+            // ✅ SỬ DỤNG KEY KẾT HỢP (product_id + color + size)
+            keyExtractor={(i) =>
+              `${i.product_id}-${i.color || ""}-${i.size || ""}`
+            }
             renderItem={({ item }) => <CartListItem item={item} />}
           />
         )}
@@ -140,6 +158,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     marginBottom: 10,
     borderRadius: 8,
+  },
+  // ✅ STYLE CHO VARIANTS
+  variantText: {
+    fontSize: 12,
+    color: "#888",
+    marginTop: 2,
   },
   qtyContainer: {
     flexDirection: "row",

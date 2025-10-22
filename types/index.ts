@@ -1,3 +1,8 @@
+export type ProductVariants = {
+  colors?: string[];
+  sizes?: string[];
+};
+
 export type Product = {
   _id?: string;
   name: string;
@@ -6,6 +11,7 @@ export type Product = {
   category_id?: string;
   rating?: number;
   review_count?: number;
+  variants?: ProductVariants;
 };
 
 export type CartItem = {
@@ -14,4 +20,6 @@ export type CartItem = {
   price: number;
   qty: number;
   image_url?: string;
+  color?: string;
+  size?: string;
 };

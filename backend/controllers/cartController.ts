@@ -5,9 +5,6 @@ import { Cart } from "../models/Cart";
 import { Product } from "../models/Product";
 import mongoose from "mongoose";
 
-// ***************************************************************
-// LƯU Ý QUAN TRỌNG: MOCK_USER_ID chỉ dùng cho mục đích demo.
-// ***************************************************************
 const MOCK_USER_ID = "60c72b2f9c1b4c001f3e7a0b";
 
 // Giả định: Middleware xác thực đã được chạy
@@ -29,7 +26,7 @@ export const getCarts = async (req: Request, res: Response) => {
 
 // 🎯 HÀM THÊM/CẬP NHẬT SẢN PHẨM VÀO GIỎ HÀNG
 export const addToCart = async (req: Request, res: Response) => {
-  const { productId, qty } = req.body;
+  const { productId, qty, color, size } = req.body;
 
   if (!productId || qty === undefined || qty < 1) {
     return res.status(400).json({ error: "Invalid productId or quantity" });
@@ -49,18 +46,26 @@ export const addToCart = async (req: Request, res: Response) => {
     }
 
     const itemIndex = cart.items.findIndex(
-      (item: any) => item.product_id.toString() === productId
+      (item: any) =>
+        item.product_id.toString() === productId &&
+        item.color === color && // ✅ SO SÁNH CẢ VARIANTS
+        item.size === size // ✅ SO SÁNH CẢ VARIANTS
     );
 
     if (itemIndex > -1) {
+      // 3. Nếu có, tăng số lượng
       cart.items[itemIndex].qty += qty;
     } else {
+      // 4. Nếu chưa có, thêm sản phẩm mới
       cart.items.push({
         product_id: productId,
         name: productDetail.name,
         price: productDetail.price,
         qty: qty,
         image_url: productDetail.image_url,
+        // ✅ LƯU VARIANTS ĐÃ CHỌN
+        color: color,
+        size: size,
       });
     }
 
@@ -81,7 +86,7 @@ export const addToCart = async (req: Request, res: Response) => {
 // 🎯 HÀM CẬP NHẬT SỐ LƯỢNG (Dùng cho nút +/-)
 export const updateCartItem = async (req: Request, res: Response) => {
   const { productId } = req.params;
-  const { qty } = req.body;
+  const { qty, color, size } = req.body;
 
   if (qty === undefined) {
     return res.status(400).json({ error: "Missing quantity" });
@@ -95,7 +100,10 @@ export const updateCartItem = async (req: Request, res: Response) => {
     }
 
     const itemIndex = cart.items.findIndex(
-      (item: any) => item.product_id.toString() === productId
+      (item: any) =>
+        item.product_id.toString() === productId &&
+        (item.color || "") === (color || "") && // So sánh, xử lý trường hợp undefined/null
+        (item.size || "") === (size || "") // So sánh, xử lý trường hợp undefined/null
     );
 
     if (itemIndex > -1) {
@@ -105,19 +113,21 @@ export const updateCartItem = async (req: Request, res: Response) => {
       } else {
         // Cập nhật số lượng
         cart.items[itemIndex].qty = qty;
-      }
+      } // Tính lại subtotal (giữ nguyên)
 
-      // Tính lại subtotal
       cart.subtotal = cart.items.reduce((sum, item) => {
         const price = item.price ?? 0;
         const qty = item.qty ?? 0;
         return sum + price * qty;
       }, 0);
 
-      await cart.save();
+      await cart.save(); // Trả về toàn bộ giỏ hàng đã cập nhật
       return res.json(cart.items);
     } else {
-      return res.status(404).json({ error: "Product not found in cart" });
+      // Nếu item không tồn tại, có thể do giỏ hàng đã được làm mới hoặc đã bị xóa
+      return res
+        .status(404)
+        .json({ error: "Product variant not found in cart" });
     }
   } catch (err) {
     console.error("Error updating cart item:", err);

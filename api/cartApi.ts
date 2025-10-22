@@ -1,8 +1,13 @@
 // src/api/cartApi.ts
 import { CartItem, Product } from "../types"; // Đảm bảo import đúng
 
-// Thay thế bằng địa chỉ backend thực tế của bạn
-const API_BASE_URL = "http://192.168.0.111:5000/api";
+interface UpdateCartItemParams {
+  product_id: string;
+  qty: number;
+  color?: string;
+  size?: string;
+}
+const API_BASE_URL = "http://192.168.0.186:5000/api";
 
 // 1. LẤY DỮ LIỆU GIỎ HÀNG
 export async function fetchCartItems(): Promise<CartItem[]> {
@@ -22,13 +27,20 @@ export async function fetchCartItems(): Promise<CartItem[]> {
 }
 
 // 2. THÊM HOẶC CẬP NHẬT SẢN PHẨM VÀO GIỎ HÀNG (Dùng cho Add to Cart)
-export async function addToCart(productId: string, qty: number): Promise<void> {
+export async function addToCart(
+  productId: string,
+  qty: number,
+  // ✅ THÊM 2 THAM SỐ MỚI
+  color?: string | null,
+  size?: string | null
+): Promise<void> {
   try {
     // Gọi đến POST /api/carts/add
     const response = await fetch(`${API_BASE_URL}/carts/add`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productId, qty }),
+      // ✅ GỬI CẢ COLOR VÀ SIZE ĐẾN BACKEND
+      body: JSON.stringify({ productId, qty, color, size }),
     });
     if (!response.ok) throw new Error("Failed to add to cart.");
   } catch (error) {
@@ -37,19 +49,28 @@ export async function addToCart(productId: string, qty: number): Promise<void> {
   }
 }
 
-// 3. CẬP NHẬT SỐ LƯỢNG (Tăng/Giảm)
 export async function updateCartItemQuantity(
-  productId: string,
-  newQty: number
+  // ✅ Thay thế 2 đối số cũ bằng 1 đối tượng duy nhất
+  params: UpdateCartItemParams
 ): Promise<void> {
+  const { product_id, qty, color, size } = params;
+
   try {
-    // Gọi đến PUT /api/carts/update/:productId
-    const url = `${API_BASE_URL}/carts/update/${productId}`;
+    // Backend API của bạn hiện chỉ dùng productId trong URL (PUT /api/carts/update/:productId)
+    // Nếu bạn muốn giữ API URL này, hãy dùng product_id:
+    const url = `${API_BASE_URL}/carts/update/${product_id}`;
+
+    // ✅ Gửi cả variants và số lượng trong body
     const response = await fetch(url, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ qty: newQty }),
+      body: JSON.stringify({
+        qty: qty,
+        color: color,
+        size: size,
+      }),
     });
+
     if (!response.ok) throw new Error("Failed to update cart quantity.");
   } catch (error) {
     console.error("Error updating cart quantity:", error);

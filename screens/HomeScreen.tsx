@@ -18,7 +18,6 @@ import { fetchCategories, Category } from "../api/categoryApi";
 import { Product } from "../types";
 import { useNavigation } from "@react-navigation/native";
 
-// Định nghĩa Category "All" giả lập
 const ALL_CATEGORY: Category = {
   _id: "all" as any,
   name: "All",
@@ -33,15 +32,13 @@ export default function HomeScreen() {
     "all"
   );
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true); // Trạng thái Loading
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation<any>();
 
-  // Tải dữ liệu ban đầu và Categories
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       try {
-        // Tải sản phẩm và danh mục đồng thời
         const [productData, categoryData] = await Promise.all([
           fetchProducts(),
           fetchCategories(),
@@ -50,7 +47,6 @@ export default function HomeScreen() {
         setAllProducts(productData);
         setDisplayedProducts(productData);
 
-        // Thêm chip "All" vào đầu danh sách Categories
         const categoriesWithAll = [ALL_CATEGORY, ...categoryData];
         setCategories(categoriesWithAll);
       } catch (error) {
@@ -60,21 +56,18 @@ export default function HomeScreen() {
           "Không thể tải dữ liệu. Vui lòng kiểm tra kết nối API."
         );
       } finally {
-        setLoading(false); // Tắt loading sau khi hoàn tất hoặc thất bại
+        setLoading(false);
       }
     };
     loadData();
   }, []);
 
-  // LOGIC LỌC TỔNG HỢP (Category + Search)
   useEffect(() => {
-    // 1. Lọc theo Category
     const productsByCategory =
       selectedCategoryId === "all"
         ? allProducts
         : allProducts.filter((p) => p.category_id === selectedCategoryId);
 
-    // 2. Lọc theo Tên (Search Query)
     const filteredAndSearched = productsByCategory.filter((p) =>
       p.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -82,9 +75,8 @@ export default function HomeScreen() {
     setDisplayedProducts(filteredAndSearched);
   }, [allProducts, selectedCategoryId, searchQuery]);
 
-  // Logic xử lý khi nhấn Category Chip
   const handleCategoryPress = (categoryId: string) => {
-    setSearchQuery(""); // Reset tìm kiếm
+    setSearchQuery("");
 
     if (categoryId === "all" || selectedCategoryId === categoryId) {
       setSelectedCategoryId("all");
@@ -93,7 +85,6 @@ export default function HomeScreen() {
     }
   };
 
-  // Hàm render cho FlatList 2 Cột (Đã fix lỗi không bấm được)
   const renderProductItem = ({ item }: { item: Product }) => (
     <View key={item._id} style={styles.gridItem}>
       <ProductCard
@@ -133,7 +124,6 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Categories */}
             <View style={{ marginTop: 12 }}>
               <Text style={{ fontSize: 18, fontWeight: "700" }}>
                 Categories
@@ -154,7 +144,6 @@ export default function HomeScreen() {
               </ScrollView>
             </View>
 
-            {/* Recommended for you (Sản phẩm cuộn ngang) */}
             <View style={{ marginTop: 16 }}>
               <Text style={{ fontSize: 18, fontWeight: "700" }}>
                 Recommended for you
@@ -176,7 +165,6 @@ export default function HomeScreen() {
               </ScrollView>
             </View>
 
-            {/* All products (FlatList 2 cột) */}
             <View style={{ marginTop: 20 }}>
               <Text style={{ fontSize: 18, fontWeight: "700" }}>
                 {selectedCategoryId === "all"
@@ -225,14 +213,13 @@ const styles = StyleSheet.create({
   },
   gridContainer: {
     paddingVertical: 12,
-    // ✅ Dùng margin âm để bù trừ cho paddingHorizontal 8px (khoảng cách bên ngoài)
     marginHorizontal: -8,
   },
   gridItem: {
-    // ✅ KHÔNG DÙNG width: '50%' hay flex: 1. Sử dụng flexGrow để FlatList tự tính toán
     flexGrow: 1,
-    width: "50%", // Chỉ định rõ chiều rộng
-    paddingHorizontal: 8, // ✅ Tạo khoảng cách 8px ở hai bên mỗi item (tạo thành 16px giữa hai item)
-    marginBottom: 12, // Khoảng cách giữa các hàng
+    width: "50%",
+    paddingHorizontal: 8,
+    marginBottom: 12,
+    marginLeft: 5,
   },
 });

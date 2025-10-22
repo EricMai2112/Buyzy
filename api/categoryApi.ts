@@ -1,5 +1,5 @@
 // src/api/categoryApi.ts
-const API_BASE_URL = "http://192.168.0.111:5000/api";
+const API_BASE_URL = "http://192.168.0.186:5000/api";
 
 // Giả định Category type
 export type Category = {

@@ -6,6 +6,8 @@ const itemSchema = new mongoose.Schema({
   price: Number,
   qty: Number,
   image_url: String,
+  color: String,
+  size: String,
 });
 
 const orderSchema = new mongoose.Schema(

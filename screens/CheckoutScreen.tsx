@@ -1,5 +1,3 @@
-// CheckoutScreen.tsx (FINAL VERSION)
-
 import React, { useState } from "react";
 import {
   View,
@@ -15,20 +13,36 @@ import Header from "../components/Header";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { clearCart } from "../api/cartApi";
 import { createOrder } from "../api/orderApi";
+
+// Giả định CheckoutItem type đã được mở rộng
+type CheckoutItem = {
+  product_id: string;
+  name: string;
+  price: number;
+  qty: number;
+  image_url?: string;
+  color?: string;
+  size?: string;
+};
+
 export default function CheckoutScreen() {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
-  const items = route.params?.items;
-  const product = route.params?.product;
+  const items = route.params?.items; // Luồng Checkout từ Cart (selectedVariants = null)
+  const product = route.params?.product; // Luồng Buy Now
+  const selectedVariants = route.params?.selectedVariants; // Variants chỉ có trong luồng Buy Now
+
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
+  // TÍNH TOÁN TỔNG TIỀN
   const total = product
     ? product.price
     : items?.reduce((s: any, i: any) => s + i.price * i.qty, 0) || 0;
 
-  const orderItems = product
+  // CHUẨN BỊ MẢNG ITEMS CHO API
+  const orderItems: CheckoutItem[] = product
     ? [
         {
           product_id: product._id,
@@ -36,15 +50,23 @@ export default function CheckoutScreen() {
           price: product.price,
           qty: 1,
           image_url: product.image_url,
+          // Thêm variants vào dữ liệu đặt hàng (chỉ có trong luồng Buy Now)
+          color: selectedVariants?.selectedColor,
+          size: selectedVariants?.selectedSize,
         },
       ]
-    : items;
+    : items || [];
 
   const handlePlaceOrder = async () => {
     if (isPlacingOrder) return;
 
     if (!name || !address) {
-      Alert.alert("Error", "Please fill in your full name and address.");
+      Alert.alert("Lỗi", "Vui lòng điền đầy đủ họ tên và địa chỉ.");
+      return;
+    }
+
+    if (orderItems.length === 0) {
+      Alert.alert("Lỗi", "Đơn hàng rỗng!");
       return;
     }
 
@@ -59,23 +81,42 @@ export default function CheckoutScreen() {
     try {
       const result = await createOrder(orderData);
 
+      // Nếu checkout từ giỏ hàng (có `items`), thì xóa giỏ hàng
       if (items) {
         await clearCart();
       }
 
       navigation.replace("Success", {
-        orderId: result.orderId,
-        total: result.total.toFixed(2),
+        orderId: result.orderId || "N/A",
+        total: total.toFixed(2),
       });
     } catch (e: any) {
       console.error("Place Order Error:", e.message);
       Alert.alert(
-        "Error",
-        e.message || "An unknown error occurred during checkout."
+        "Lỗi",
+        e.message || "Không thể đặt hàng. Vui lòng kiểm tra API."
       );
-
       setIsPlacingOrder(false);
     }
+  };
+
+  // ✅ LOGIC HIỂN THỊ CÓ ĐIỀU KIỆN
+  const renderVariantSummary = () => {
+    if (!selectedVariants) return null; // ẨN nếu là Checkout từ Cart
+
+    const { selectedColor, selectedSize } = selectedVariants;
+    if (!selectedColor && !selectedSize) return null;
+
+    return (
+      <View style={localStyles.variantInfo}>
+        {selectedColor && (
+          <Text style={localStyles.variantText}>Màu sắc: {selectedColor}</Text>
+        )}
+        {selectedSize && (
+          <Text style={localStyles.variantText}>Kích cỡ: {selectedSize}</Text>
+        )}
+      </View>
+    );
   };
 
   return (
@@ -99,7 +140,6 @@ export default function CheckoutScreen() {
           onChangeText={setAddress}
           editable={!isPlacingOrder}
         />
-
         <View style={{ marginTop: 20 }}>
           <Text style={{ fontWeight: "700" }}>Payment method</Text>
           <View style={{ marginTop: 10 }}>
@@ -107,14 +147,37 @@ export default function CheckoutScreen() {
             <Text>• Card (not implemented)</Text>
           </View>
         </View>
-
         <View style={{ marginTop: 30 }}>
-          <Text style={{ fontWeight: "700", fontSize: 16 }}>Order Summary</Text>
-          <View style={{ marginTop: 10 }}>
-            <Text>Total: ${total.toFixed(2)}</Text>
+          <Text style={{ fontWeight: "700", fontSize: 16, marginBottom: 10 }}>
+            Order Summary
+          </Text>
+
+          {orderItems.map((item, index) => (
+            <View key={index} style={localStyles.itemRow}>
+              <View style={{ flex: 1 }}>
+                <Text style={localStyles.itemName}>
+                  {item.name} (x{item.qty})
+                </Text>
+
+                {(item.color || item.size) && (
+                  <Text style={localStyles.itemVariant}>
+                    {item.color ? `Màu: ${item.color}` : ""}
+                    {item.color && item.size ? ", " : ""}
+                    {item.size ? `Kích cỡ: ${item.size}` : ""}
+                  </Text>
+                )}
+              </View>
+              <Text style={localStyles.itemPrice}>
+                ${(item.price * item.qty).toFixed(2)}
+              </Text>
+            </View>
+          ))}
+
+          <View style={localStyles.totalRow}>
+            <Text style={localStyles.totalText}>Total:</Text>
+            <Text style={localStyles.totalText}>${total.toFixed(2)}</Text>
           </View>
         </View>
-
         <TouchableOpacity
           style={[styles.placeBtn, isPlacingOrder && styles.disabledBtn]}
           onPress={handlePlaceOrder}
@@ -145,5 +208,49 @@ const styles = StyleSheet.create({
   },
   disabledBtn: {
     backgroundColor: "#ccc",
+  },
+});
+
+const localStyles = StyleSheet.create({
+  variantInfo: {
+    marginTop: 8,
+    borderLeftWidth: 2,
+    borderColor: "#ccc",
+    paddingLeft: 10,
+  },
+  variantText: {
+    fontSize: 12,
+    color: "#555",
+  },
+  itemRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  itemName: {
+    fontWeight: "500",
+  },
+  itemVariant: {
+    fontSize: 12,
+    color: "#888",
+    marginTop: 2,
+  },
+  itemPrice: {
+    fontWeight: "bold",
+  },
+  totalRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: "#333",
+    paddingTop: 10,
+  },
+  totalText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#2a9d8f",
   },
 });
