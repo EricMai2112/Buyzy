@@ -7,7 +7,7 @@ import ordersRouter from "./routes/orderRoute";
 import feedbacksRouter from "./routes/feedbackRoute";
 
 const app = express();
-app.use(cors({ origin: "http://172.16.3.202:19006" })); // Thay IP Expo
+app.use(cors({ origin: "http://192.168.236.1:19006" }));
 app.use(express.json());
 
 const url = process.env.MONGO_URL || "mongodb://localhost:27017";

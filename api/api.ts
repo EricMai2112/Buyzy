@@ -1,6 +1,6 @@
 import { Product } from "../types";
 
-const BASE = "http://192.168.0.186:5000/api";
+const BASE = "http://172.20.10.2:5000/api";
 
 export async function fetchProducts(
   minPrice?: number,

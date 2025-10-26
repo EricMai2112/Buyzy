@@ -13,6 +13,7 @@ import CheckoutScreen from "./screens/CheckoutScreen";
 import SuccessScreen from "./screens/SuccessScreen";
 import FeedbackScreen from "./screens/FeedbackScreen";
 import CategoryProductScreen from "./screens/CategoryProductScreen";
+import LoginScreen from "./screens/LoginScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -44,13 +45,17 @@ function MainTabs() {
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator
+        screenOptions={{ headerShown: false }}
+        initialRouteName="Login"
+      >
         <Stack.Screen name="MainTabs" component={MainTabs} />
         <Stack.Screen name="Category" component={CategoryScreen} />
         <Stack.Screen
           name="CategoryProduct"
           component={CategoryProductScreen}
         />
+        <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Filter" component={FilterScreen} />
         <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
         <Stack.Screen name="Cart" component={CartScreen} />
