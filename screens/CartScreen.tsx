@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Image,
 } from "react-native";
 import Header from "../components/Header";
 // Giả định CartItem type đã được mở rộng để bao gồm color/size
@@ -44,18 +45,15 @@ export default function CartScreen() {
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
 
-  // Cập nhật lại logic hàm này trong CartScreen.tsx:
   const handleUpdateQuantity = async (
     itemToUpdate: CartItem,
     delta: number
   ) => {
     const newQty = itemToUpdate.qty + delta;
 
-    // Kiểm tra số lượng tối thiểu để xóa sản phẩm khỏi giỏ hàng
     if (newQty < 0) return;
 
     try {
-      // Trích xuất các trường cần thiết để xác định và cập nhật item trong API
       await updateCartItemQuantity({
         product_id: itemToUpdate.product_id,
         qty: newQty,
@@ -70,18 +68,27 @@ export default function CartScreen() {
 
   const CartListItem = ({ item }: { item: CartItem }) => (
     <View style={styles.row}>
-      <View style={{ flex: 1 }}>
-        <Text style={{ fontWeight: "700" }}>{item.name}</Text>
+      <View
+        style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 10 }}
+      >
+        <Image
+          source={{ uri: item.image_url }}
+          style={{ width: 50, height: 50, borderRadius: 8 }}
+          resizeMode="cover"
+        />
+        <View>
+          <Text style={{ fontWeight: "700" }}>{item.name}</Text>
 
-        {(item.color || item.size) && (
-          <Text style={styles.variantText}>
-            {item.color ? `Màu: ${item.color}` : ""}
-            {item.color && item.size ? ", " : ""}
-            {item.size ? `Kích cỡ: ${item.size}` : ""}
-          </Text>
-        )}
+          {(item.color || item.size) && (
+            <Text style={styles.variantText}>
+              {item.color ? `Màu: ${item.color}` : ""}
+              {item.color && item.size ? ", " : ""}
+              {item.size ? `Kích cỡ: ${item.size}` : ""}
+            </Text>
+          )}
 
-        <Text>${item.price.toFixed(2)}</Text>
+          <Text>${item.price.toFixed(2)}</Text>
+        </View>
       </View>
       <View style={styles.qtyContainer}>
         <TouchableOpacity
@@ -122,7 +129,6 @@ export default function CartScreen() {
         ) : (
           <FlatList
             data={items}
-            // ✅ SỬ DỤNG KEY KẾT HỢP (product_id + color + size)
             keyExtractor={(i) =>
               `${i.product_id}-${i.color || ""}-${i.size || ""}`
             }

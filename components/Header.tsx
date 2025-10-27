@@ -11,22 +11,18 @@ export default function Header({
 }) {
   return (
     <View style={styles.container}>
-      {/* Nút Back (giữ nguyên) */}
       <TouchableOpacity style={styles.left}>
         <Ionicons name="arrow-back" size={22} color="#222" />
       </TouchableOpacity>
 
-      {/* Tiêu đề (giữ nguyên) */}
       <Text style={styles.title}>{title || "All Deals"}</Text>
 
-      {/* ✅ KHỐI BÊN PHẢI: Chứa cả Cart Icon và Avatar */}
       <View style={styles.rightGroup}>
-        {/* 1. CART ICON (ACTIVE) */}
+
         <TouchableOpacity onPress={onCartPress} style={styles.cartBtn}>
           <Ionicons name="cart-outline" size={26} color="#222" />
         </TouchableOpacity>
 
-        {/* 2. AVATAR IMAGE (PASSIVE - KHÔNG CÓ onPress) */}
         <View style={styles.avatarWrap}>
           <Image
             source={{ uri: "https://i.pravatar.cc/100" }}
