@@ -4,13 +4,10 @@ import { Request, Response } from "express";
 import { Cart } from "../models/Cart";
 import { Product } from "../models/Product";
 import mongoose from "mongoose";
+import { getUserIdFromRequest } from "../utils/getUserIdFromRequest";
 
-const MOCK_USER_ID = "60c72b2f9c1b4c001f3e7a0b";
-
-// Giả định: Middleware xác thực đã được chạy
-const getUserId = (req: Request): mongoose.Types.ObjectId => {
-  // return req.user.id; // Nếu có Auth
-  return new mongoose.Types.ObjectId(MOCK_USER_ID);
+const getUserId = (req: Request): mongoose.Types.ObjectId | null => {
+  return getUserIdFromRequest(req); // ✅ Dùng Helper mới
 };
 
 export const getCarts = async (req: Request, res: Response) => {

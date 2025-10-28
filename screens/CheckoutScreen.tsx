@@ -13,8 +13,8 @@ import Header from "../components/Header";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { clearCart } from "../api/cartApi";
 import { createOrder } from "../api/orderApi";
+import { useAuth } from "../context/AuthContext";
 
-// Giả định CheckoutItem type đã được mở rộng
 type CheckoutItem = {
   product_id: string;
   name: string;
@@ -27,21 +27,20 @@ type CheckoutItem = {
 
 export default function CheckoutScreen() {
   const route = useRoute<any>();
+  const { userId } = useAuth();
   const navigation = useNavigation<any>();
-  const items = route.params?.items; // Luồng Checkout từ Cart (selectedVariants = null)
-  const product = route.params?.product; // Luồng Buy Now
-  const selectedVariants = route.params?.selectedVariants; // Variants chỉ có trong luồng Buy Now
+  const items = route.params?.items;
+  const product = route.params?.product;
+  const selectedVariants = route.params?.selectedVariants;
 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
-  // TÍNH TOÁN TỔNG TIỀN
   const total = product
     ? product.price
     : items?.reduce((s: any, i: any) => s + i.price * i.qty, 0) || 0;
 
-  // CHUẨN BỊ MẢNG ITEMS CHO API
   const orderItems: CheckoutItem[] = product
     ? [
         {
@@ -50,7 +49,6 @@ export default function CheckoutScreen() {
           price: product.price,
           qty: 1,
           image_url: product.image_url,
-          // Thêm variants vào dữ liệu đặt hàng (chỉ có trong luồng Buy Now)
           color: selectedVariants?.selectedColor,
           size: selectedVariants?.selectedSize,
         },
@@ -58,6 +56,10 @@ export default function CheckoutScreen() {
     : items || [];
 
   const handlePlaceOrder = async () => {
+    if (!userId) {
+      Alert.alert("Lỗi", "Vui lòng đăng nhập lại.");
+      return;
+    }
     if (isPlacingOrder) return;
 
     if (!name || !address) {
@@ -79,9 +81,7 @@ export default function CheckoutScreen() {
     setIsPlacingOrder(true);
 
     try {
-      const result = await createOrder(orderData);
-
-      // Nếu checkout từ giỏ hàng (có `items`), thì xóa giỏ hàng
+      const result = await createOrder(orderData, userId);
       if (items) {
         await clearCart();
       }
@@ -100,9 +100,8 @@ export default function CheckoutScreen() {
     }
   };
 
-  // ✅ LOGIC HIỂN THỊ CÓ ĐIỀU KIỆN
   const renderVariantSummary = () => {
-    if (!selectedVariants) return null; // ẨN nếu là Checkout từ Cart
+    if (!selectedVariants) return null;
 
     const { selectedColor, selectedSize } = selectedVariants;
     if (!selectedColor && !selectedSize) return null;

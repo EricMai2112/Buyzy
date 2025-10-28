@@ -1,13 +1,31 @@
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Alert, Image, StyleSheet, Text, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
+import { login as loginApi, UserData } from "../api/userApi";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginScreen() {
   const navigation = useNavigation<any>();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { login: setAuth } = useAuth();
 
-  const handleLogin = () => {
-    navigation.replace("MainTabs");
+  const handleLogin = async () => {
+    setLoading(true);
+    try {
+      const userData: UserData = await loginApi(email, password);
+
+      setAuth(userData._id, userData.name);
+
+      Alert.alert("Thành công", `Chào mừng, ${userData.name}!`);
+
+      navigation.replace("MainTabs");
+    } catch (error: any) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -27,16 +45,31 @@ export default function LoginScreen() {
         ĐĂNG NHẬP
       </Text>
       <View style={{ gap: 20, width: "80%" }}>
-        <TextInput label={"Tài khoản"} placeholder="Nhập tài khoản..." />
-        <TextInput label={"Mật khẩu"} placeholder="Nhập mật khẩu..." />
+        <TextInput
+          label={"Tài khoản"}
+          placeholder="Nhập tài khoản..."
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          label={"Mật khẩu"}
+          placeholder="Nhập mật khẩu..."
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
 
         <Button
           mode="contained"
           buttonColor="green"
           onPress={handleLogin}
           style={{ padding: 10, marginTop: 30 }}
+          disabled={loading}
+          loading={loading}
         >
-          <Text style={{ fontWeight: "bold", fontSize: 15 }}>Đăng nhập</Text>
+          <Text style={{ fontWeight: "bold", fontSize: 15 }}>
+            {loading ? "Đang xử lý..." : "Đăng nhập"}
+          </Text>
         </Button>
       </View>
     </View>

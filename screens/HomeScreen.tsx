@@ -203,7 +203,6 @@ export default function HomeScreen() {
                         ?.name || "Category"
                     }`}
               </Text>
-              {/* Hiển thị thông tin bộ lọc đang áp dụng */}
               {currentFilters.minPrice || currentFilters.maxPrice ? (
                 <Text style={styles.filterAppliedText}>
                   Filtered by Price:
@@ -254,7 +253,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   filterAppliedText: {
-    // ✅ Style mới cho thông báo bộ lọc
     fontSize: 14,
     color: "#2a9d8f",
     marginTop: 5,

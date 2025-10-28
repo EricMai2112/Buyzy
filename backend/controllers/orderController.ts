@@ -2,35 +2,51 @@
 import { Request, Response } from "express";
 import { Order } from "../models/Order";
 import mongoose from "mongoose";
+import { getUserIdFromRequest } from "../utils/getUserIdFromRequest";
 
 // ***************************************************************
 // LƯU Ý QUAN TRỌNG: MOCK_USER_ID chỉ dùng cho mục đích demo.
 // ***************************************************************
-const MOCK_USER_ID = "60c72b2f9c1b4c001f3e7a0b";
-const getUserId = (req: Request): mongoose.Types.ObjectId => {
-  // return req.user.id;
-  return new mongoose.Types.ObjectId(MOCK_USER_ID);
+const getUserId = (req: Request): mongoose.Types.ObjectId | null => {
+  return getUserIdFromRequest(req); // ✅ Dùng Helper mới
 };
 
 export const getOrders = async (_: Request, res: Response) => {
   const orders = await Order.find();
   res.json(orders);
 };
+export const getOrdersByUserId = async (req: Request, res: Response) => {
+  const userId = getUserId(req); // Lấy ID từ params
 
-export const createOrder = async (req: Request, res: Response) => {
-  const { items, total, shipping_address } = req.body;
-
-  if (!items || !total || !shipping_address) {
-    return res
-      .status(400)
-      .json({
-        error: "Missing order details (items, total, or shipping_address)",
-      });
+  if (!userId) {
+    return res.status(401).json({ error: "Unauthorized: User ID missing." });
   }
 
   try {
-    const userId = getUserId(req);
+    const orders = await Order.find({ user_id: userId }).sort({
+      created_at: -1,
+    });
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch orders" });
+  }
+};
 
+export const createOrder = async (req: Request, res: Response) => {
+  const { items, total, shipping_address } = req.body;
+  const userId = getUserId(req);
+
+  if (!userId) {
+    return res.status(401).json({ error: "Unauthorized: User ID missing." });
+  }
+
+  if (!items || !total || !shipping_address) {
+    return res.status(400).json({
+      error: "Missing order details (items, total, or shipping_address)",
+    });
+  }
+
+  try {
     // Chuẩn bị mảng items (đã được đảm bảo chuyển đổi ObjectId trong logic trước)
     const orderItems = items.map((item: any) => ({
       product_id: new mongoose.Types.ObjectId(item.product_id),

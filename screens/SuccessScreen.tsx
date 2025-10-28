@@ -43,9 +43,9 @@ export default function SuccessScreen() {
 
         <TouchableOpacity
           style={[styles.btn, { backgroundColor: "#ccc", marginTop: 12 }]}
-          onPress={() => navigation.navigate("MainTabs")}
+          onPress={() => navigation.replace("MainTabs", { screen: "Order" })}
         >
-          <Text>Back to Home</Text>
+          <Text>Back to order</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

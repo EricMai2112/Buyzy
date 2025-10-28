@@ -23,3 +23,7 @@ export type CartItem = {
   color?: string;
   size?: string;
 };
+
+export type Order = {
+  
+}

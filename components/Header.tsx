@@ -18,7 +18,6 @@ export default function Header({
       <Text style={styles.title}>{title || "All Deals"}</Text>
 
       <View style={styles.rightGroup}>
-
         <TouchableOpacity onPress={onCartPress} style={styles.cartBtn}>
           <Ionicons name="cart-outline" size={26} color="#222" />
         </TouchableOpacity>
@@ -45,21 +44,18 @@ const styles = StyleSheet.create({
   left: { width: 32 },
   title: { fontSize: 18, fontWeight: "600" },
 
-  // ✅ GROUP CONTAINER MỚI: Dùng cho cả Icon và Avatar
   rightGroup: {
     flexDirection: "row",
     alignItems: "center",
-    width: 75, // Cung cấp đủ không gian
+    width: 75,
     justifyContent: "flex-end",
   },
 
-  // STYLE CHO CART BUTTON
   cartBtn: {
     padding: 2,
-    marginRight: 8, // Tạo khoảng cách giữa Icon và Avatar
+    marginRight: 8,
   },
 
-  // STYLE CŨ ĐƯỢC PHỤC HỒI CHO AVATAR
   avatarWrap: {
     width: 36,
     height: 36,
