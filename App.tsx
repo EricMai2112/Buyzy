@@ -16,6 +16,7 @@ import CategoryProductScreen from "./screens/CategoryProductScreen";
 import LoginScreen from "./screens/LoginScreen";
 import OrderScreen from "./screens/OrderScreen";
 import { AuthProvider } from "./context/AuthContext";
+import AccountScreen from "./screens/AccountScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -27,19 +28,19 @@ function MainTabs() {
         headerShown: false,
         tabBarIcon: ({ color, size }) => {
           let name = "home";
-          if (route.name === "Search") name = "search";
+          if (route.name === "Categories") name = "grid-outline";
           else if (route.name === "Favorites") name = "heart";
-          else if (route.name === "Inbox") name = "chatbubble";
+          else if (route.name === "Order") name = "receipt-outline";
           else if (route.name === "Account") name = "person";
           return <Ionicons name={name as any} size={size} color={color} />;
         },
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Search" component={CategoryScreen} />
+      <Tab.Screen name="Categories" component={CategoryScreen} />
       <Tab.Screen name="Favorites" component={HomeScreen} />
       <Tab.Screen name="Order" component={OrderScreen} />
-      <Tab.Screen name="Account" component={HomeScreen} />
+      <Tab.Screen name="Account" component={AccountScreen} />
     </Tab.Navigator>
   );
 }
