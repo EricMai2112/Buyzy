@@ -140,14 +140,15 @@ export default function CheckoutScreen() {
           editable={!isPlacingOrder}
         />
         <View style={{ marginTop: 20 }}>
-          <Text style={{ fontWeight: "700" }}>Payment method</Text>
+          <Text style={{ fontWeight: "700", fontSize: 18 }}>
+            Payment method
+          </Text>
           <View style={{ marginTop: 10 }}>
             <Text>• Cash on delivery</Text>
-            <Text>• Card (not implemented)</Text>
           </View>
         </View>
         <View style={{ marginTop: 30 }}>
-          <Text style={{ fontWeight: "700", fontSize: 16, marginBottom: 10 }}>
+          <Text style={{ fontWeight: "700", fontSize: 18, marginBottom: 10 }}>
             Order Summary
           </Text>
 
@@ -197,10 +198,11 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 10,
     marginTop: 12,
+    borderWidth: 1,
   },
   placeBtn: {
     marginTop: 24,
-    backgroundColor: "#2a9d8f",
+    backgroundColor: "#ee4d2d",
     padding: 14,
     borderRadius: 10,
     alignItems: "center",
@@ -250,6 +252,6 @@ const localStyles = StyleSheet.create({
   totalText: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#2a9d8f",
+    color: "#ee4d2d",
   },
 });

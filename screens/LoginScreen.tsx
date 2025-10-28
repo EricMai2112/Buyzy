@@ -7,8 +7,8 @@ import { useAuth } from "../context/AuthContext";
 
 export default function LoginScreen() {
   const navigation = useNavigation<any>();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("mait58674@gmail.com");
+  const [password, setPassword] = useState("123");
   const [loading, setLoading] = useState(false);
   const { login: setAuth } = useAuth();
 
@@ -17,7 +17,7 @@ export default function LoginScreen() {
     try {
       const userData: UserData = await loginApi(email, password);
 
-      setAuth(userData._id, userData.name);
+      setAuth(userData._id, userData.name, userData.role);
 
       Alert.alert("Thành công", `Chào mừng, ${userData.name}!`);
 
@@ -40,6 +40,7 @@ export default function LoginScreen() {
           fontSize: 30,
           fontWeight: "bold",
           marginBottom: 50,
+          color: "#ee4d2d",
         }}
       >
         ĐĂNG NHẬP
@@ -50,6 +51,7 @@ export default function LoginScreen() {
           placeholder="Nhập tài khoản..."
           value={email}
           onChangeText={setEmail}
+          style={{ backgroundColor: "white" }}
         />
         <TextInput
           label={"Mật khẩu"}
@@ -57,11 +59,12 @@ export default function LoginScreen() {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          style={{ backgroundColor: "white" }}
         />
 
         <Button
           mode="contained"
-          buttonColor="green"
+          buttonColor="#ee4d2d"
           onPress={handleLogin}
           style={{ padding: 10, marginTop: 30 }}
           disabled={loading}

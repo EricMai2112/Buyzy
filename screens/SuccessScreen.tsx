@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from "react-native";
 import Header from "../components/Header";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -17,7 +18,7 @@ export default function SuccessScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Header title="Success" />
+      <Header title="Mua hàng" />
       <View
         style={{
           flex: 1,
@@ -26,11 +27,22 @@ export default function SuccessScreen() {
           padding: 16,
         }}
       >
+        <Image
+          source={require("../assets/check.png")}
+          style={{
+            objectFit: "cover",
+            width: 200,
+            height: 200,
+            marginBottom: 100,
+          }}
+        />
         <Text style={{ fontSize: 22, fontWeight: "800", marginBottom: 8 }}>
-          Order placed successfully!
+          Đặt hàng thành công
         </Text>
         <Text>Order ID: {orderId}</Text>
-        <Text style={{ marginTop: 8 }}>Total: ${total}</Text>
+        <Text style={{ marginTop: 8, fontWeight: "bold" }}>
+          Total: ${total}
+        </Text>
 
         <TouchableOpacity
           style={styles.btn}
@@ -54,7 +66,7 @@ export default function SuccessScreen() {
 
 const styles = StyleSheet.create({
   btn: {
-    backgroundColor: "#2a9d8f",
+    backgroundColor: "#ee4d2d",
     padding: 12,
     borderRadius: 10,
     marginTop: 16,

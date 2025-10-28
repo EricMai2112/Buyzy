@@ -14,6 +14,7 @@ import { fetchProductById } from "../api/api";
 import { Product } from "../types";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { addToCart } from "../api/cartApi"; // ⬅️ API (Giả định đã cập nhật)
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 // Giả định Product type được mở rộng để bao gồm variants
 type ProductWithVariants = Product & {
@@ -147,7 +148,7 @@ export default function ProductDetailScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaProvider style={{ flex: 1 }}>
       <Header
         title={product.name}
         onCartPress={() => navigation.navigate("Cart")}
@@ -216,7 +217,7 @@ export default function ProductDetailScreen() {
           <Text style={{ color: "#fff", fontWeight: "700" }}>Buy Now</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
   },
   cartBtn: {
     flex: 1,
-    backgroundColor: "#2a9d8f",
+    backgroundColor: "#ee4d2d",
     padding: 12,
     borderRadius: 10,
     alignItems: "center",
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
   },
   buyBtn: {
     flex: 2,
-    backgroundColor: "#3fb0b0",
+    backgroundColor: "#ee4d2d",
     padding: 12,
     borderRadius: 10,
     alignItems: "center",

@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema(
     favorites: [String],
     cart: [Object],
     inbox: [inboxSchema],
+    role: { type: String, enum: ["user", "admin"], default: "user" },
   },
   { timestamps: true }
 );

@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 8,
   },
-  orderId: { fontSize: 16, fontWeight: "700", color: "#333" },
+  orderId: { fontSize: 16, fontWeight: "700", color: "#ee4d2d" },
   date: { fontSize: 12, color: "#999", marginBottom: 10 },
   status: {
     paddingHorizontal: 8,

@@ -18,6 +18,7 @@ import { fetchProducts } from "../api/api";
 import { fetchCategories, Category } from "../api/categoryApi";
 import { Product } from "../types";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useAuth } from "../context/AuthContext";
 
 interface PriceFilters {
   minPrice?: number;
@@ -33,6 +34,7 @@ const ALL_CATEGORY: Category = {
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
+  const { userRole } = useAuth();
 
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
@@ -128,7 +130,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Header
-        title="All Deals"
+        title="Danh sách sản phẩm"
         onCartPress={() => navigation.navigate("Cart")}
       />
       <ScrollView contentContainerStyle={{ padding: 16 }}>
@@ -140,7 +142,7 @@ export default function HomeScreen() {
           <>
             <View style={styles.searchRow}>
               <TextInput
-                placeholder="Search for product"
+                placeholder="Nhập tên sản phẩm..."
                 style={styles.search}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -149,14 +151,40 @@ export default function HomeScreen() {
                 style={styles.filterBtn}
                 onPress={() => navigation.navigate("Filter")}
               >
-                <Text>Filter</Text>
+                <Text>Tìm kiếm</Text>
               </TouchableOpacity>
             </View>
 
             <View style={{ marginTop: 12 }}>
-              <Text style={{ fontSize: 18, fontWeight: "700" }}>
-                Categories
-              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ fontSize: 18, fontWeight: "700" }}>
+                  Categories
+                </Text>
+                {userRole === "admin" && (
+                  <View>
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("AdminProductManagement")
+                      }
+                      style={{
+                        padding: 10,
+                        borderRadius: 10,
+                        backgroundColor: "#ee4d2d",
+                      }}
+                    >
+                      <Text style={{ fontWeight: "bold", color: "white" }}>
+                        Quản lý sản phẩm
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -245,6 +273,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f2f4f6",
     padding: 12,
     borderRadius: 10,
+    borderWidth: 1,
   },
   filterBtn: {
     marginLeft: 10,

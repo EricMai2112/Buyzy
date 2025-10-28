@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
     borderLeftWidth: 5,
-    borderLeftColor: "#007aff", // Màu xanh nổi bật
+    borderLeftColor: "#ee4d2d",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,

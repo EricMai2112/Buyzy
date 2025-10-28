@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
   submit: {
     marginTop: 16,
-    backgroundColor: "#2a9d8f",
+    backgroundColor: "#ee4d2d",
     padding: 12,
     borderRadius: 10,
     alignItems: "center",

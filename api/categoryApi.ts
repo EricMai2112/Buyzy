@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://172.16.1.23:5000/api";
+const API_BASE_URL = "http://192.168.0.112:5000/api";
 
 export type Category = {
   _id: string;

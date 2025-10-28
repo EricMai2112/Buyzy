@@ -12,14 +12,14 @@ export default function Header({
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.left}>
-        <Ionicons name="arrow-back" size={22} color="#222" />
+        <Ionicons name="arrow-back" size={22} color="white" />
       </TouchableOpacity>
 
-      <Text style={styles.title}>{title || "All Deals"}</Text>
+      <Text style={styles.title}>{title}</Text>
 
       <View style={styles.rightGroup}>
         <TouchableOpacity onPress={onCartPress} style={styles.cartBtn}>
-          <Ionicons name="cart-outline" size={26} color="#222" />
+          <Ionicons name="cart-outline" size={26} color="#fff" />
         </TouchableOpacity>
 
         <View style={styles.avatarWrap}>
@@ -38,11 +38,16 @@ const styles = StyleSheet.create({
     height: 60,
     flexDirection: "row",
     alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    elevation: 4,
+    zIndex: 10,
     paddingHorizontal: 12,
     justifyContent: "space-between",
+    backgroundColor: "#ee4d2d",
   },
   left: { width: 32 },
-  title: { fontSize: 18, fontWeight: "600" },
+  title: { fontSize: 18, fontWeight: "600", color: "white" },
 
   rightGroup: {
     flexDirection: "row",

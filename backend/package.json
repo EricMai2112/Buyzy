@@ -12,7 +12,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "mongoose": "^8.7.0"
+    "mongoose": "^8.7.0",
+    "react-native-picker-select": "^9.3.1"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.5",

@@ -75,7 +75,7 @@ export default function FilterScreen() {
 const styles = StyleSheet.create({
   apply: {
     marginTop: 24,
-    backgroundColor: "#2a9d8f",
+    backgroundColor: "#ee4d2d",
     padding: 14,
     borderRadius: 10,
     alignItems: "center",

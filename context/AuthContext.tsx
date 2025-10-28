@@ -3,7 +3,8 @@ import React, { createContext, useState, useContext, ReactNode } from "react";
 interface AuthContextType {
   userId: string | null;
   userName: string | null;
-  login: (id: string, name: string) => void;
+  userRole: "user" | "admin" | null;
+  login: (id: string, name: string, role: string) => void;
   logout: () => void;
 }
 
@@ -12,10 +13,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userId, setUserId] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<"user" | "admin" | null>(null);
 
-  const login = (id: string, name: string) => {
+  const login = (id: string, name: string, role: string) => {
     setUserId(id);
     setUserName(name);
+    setUserRole(role === "admin" ? "admin" : "user");
   };
 
   const logout = () => {
@@ -24,7 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ userId, userName, login, logout }}>
+    <AuthContext.Provider value={{ userId, userName, userRole, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f2f6fb",
     marginRight: 10,
   },
-  sel: { backgroundColor: "#e6f7f6", borderWidth: 1, borderColor: "#9fe6df" },
+  sel: { backgroundColor: "#ffe1c9", borderWidth: 1, borderColor: "#ee4d2d" },
   txt: { color: "#333" },
-  selTxt: { color: "#0b7b77", fontWeight: "700" },
+  selTxt: { color: "#ee4d2d", fontWeight: "700" },
 });

@@ -1,8 +1,9 @@
-const API_BASE_URL = "http://172.16.1.23:5000/api";
+const API_BASE_URL = "http://192.168.0.112:5000/api";
 
 export interface UserData {
   _id: string;
   name: string;
+  role: string;
 }
 export async function login(
   email: string,
