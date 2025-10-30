@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Header({
   title,

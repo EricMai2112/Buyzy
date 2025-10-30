@@ -12,10 +12,9 @@ import {
 import { useRoute, useNavigation } from "@react-navigation/native";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
-import { fetchProducts } from "../api/api"; // Lấy API đã sửa
-import { Product } from "../types"; // Giả định Product type tồn tại
+import { fetchProducts } from "../api/api";
+import { Product } from "../types";
 
-// Định nghĩa kiểu dữ liệu route.params cho màn hình này
 interface CategoryProductRouteParams {
   categoryId: string;
   title: string;
@@ -31,7 +30,6 @@ export default function CategoryProductScreen() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // LOGIC TẢI SẢN PHẨM THEO CATEGORY ID
   const loadProducts = useCallback(async () => {
     console.log("DEBUG: categoryId received:", categoryId);
     if (!categoryId) {
@@ -41,7 +39,6 @@ export default function CategoryProductScreen() {
     }
     setLoading(true);
     try {
-      // ✅ GỌI API CHÍNH XÁC: Truyền categoryId là tham số thứ 3
       const data = await fetchProducts(undefined, undefined, categoryId);
       setProducts(data);
     } catch (error) {
@@ -71,7 +68,6 @@ export default function CategoryProductScreen() {
             Không có sản phẩm nào trong danh mục này.
           </Text>
         ) : (
-          // ✅ SỬ DỤNG CONTAINER VÀ GRID ĐỂ TẠO LƯỚI 2 CỘT
           <View style={styles.productsGridContainer}>
             {products.map((p) => (
               <View key={p._id} style={styles.gridItem}>
@@ -100,7 +96,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: "#333",
   },
-  // ✅ GRID CONTAINER MỚI
   productsGridContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -108,7 +103,6 @@ const styles = StyleSheet.create({
     marginHorizontal: -8,
     marginTop: 10,
   },
-  // ✅ ITEM CON MỚI (chiếm ~50%)
   gridItem: {
     width: "48%",
     paddingHorizontal: 8,

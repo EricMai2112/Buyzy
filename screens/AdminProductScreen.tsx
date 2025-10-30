@@ -108,8 +108,6 @@ export default function AdminProductScreen({ navigation }: any) {
         Alert.alert("Thành công", `Sản phẩm '${name}' đã được thêm.`);
       }
 
-      Alert.alert("Thành công", `Sản phẩm '${name}' đã được thêm.`);
-
       navigation.navigate("MainTabs", {
         screen: "Home",
         params: { shouldRefresh: true },
@@ -279,14 +277,11 @@ export default function AdminProductScreen({ navigation }: any) {
         </Button>
 
         <Text style={localStyles.listTitle}>Quản Lý ({products.length})</Text>
-        <FlatList
-          data={products}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => <ProductListItem item={item} />}
-          ListEmptyComponent={
-            <Text style={{ textAlign: "center" }}>Chưa có sản phẩm nào.</Text>
-          }
-        />
+        <View>
+          {products.map((item) => (
+            <ProductListItem key={item._id} item={item} />
+          ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

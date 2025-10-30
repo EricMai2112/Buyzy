@@ -1,24 +1,42 @@
 import { Request, Response } from "express";
 import { Product } from "../models/Product";
+import mongoose from "mongoose";
 
 export const getProducts = async (req: Request, res: Response) => {
-  const { minPrice, maxPrice } = req.query;
+  const { minPrice, maxPrice, category } = req.query;
 
-  let filter = {};
+  let filter: any = {};
 
+  if (category) {
+    const categoryString = category as string;
+    const categoryIdsToFind: (string | mongoose.Types.ObjectId)[] = [
+      categoryString,
+    ];
+
+    try {
+      categoryIdsToFind.push(new mongoose.Types.ObjectId(categoryString));
+    } catch (e) {}
+
+    filter.category_id = { $in: categoryIdsToFind };
+  }
   if (minPrice || maxPrice) {
-    filter = {
-      price: {
-        ...(minPrice && { $gte: parseFloat(minPrice as string) }),
-        ...(maxPrice && { $lte: parseFloat(maxPrice as string) }),
-      },
-    };
+    const priceFilter: any = {};
+    if (minPrice) {
+      priceFilter.$gte = parseFloat(minPrice as string);
+    }
+    if (maxPrice) {
+      priceFilter.$lte = parseFloat(maxPrice as string);
+    }
+
+    filter.price = priceFilter;
   }
 
   try {
+    console.log("DEBUG: Final Mongoose Filter:", JSON.stringify(filter));
     const products = await Product.find(filter);
     res.json(products);
   } catch (err) {
+    console.error("Error fetching products:", err);
     res.status(500).json({ error: "Failed to fetch products" });
   }
 };
@@ -44,15 +62,12 @@ export const getProductById = async (req: Request, res: Response) => {
 };
 
 export const createProduct = async (req: Request, res: Response) => {
-  // Dữ liệu sản phẩm mới được gửi trong req.body
   const productData = req.body;
 
   try {
     const newProduct = await Product.create(productData);
-    // Trả về 201 Created
     res.status(201).json(newProduct);
   } catch (err: any) {
-    // Xử lý lỗi validation hoặc lỗi DB khác
     res
       .status(400)
       .json({ error: "Failed to create product", details: err.message });
@@ -61,14 +76,13 @@ export const createProduct = async (req: Request, res: Response) => {
 
 export const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const updates = req.body; // Dữ liệu cập nhật
+  const updates = req.body;
 
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(
-      id,
-      updates,
-      { new: true, runValidators: true } // {new: true} trả về tài liệu đã cập nhật
-    );
+    const updatedProduct = await Product.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!updatedProduct) {
       return res.status(404).json({ error: "Product not found for update." });
@@ -82,7 +96,6 @@ export const updateProduct = async (req: Request, res: Response) => {
   }
 };
 
-// 🎯 3. DELETE PRODUCT (DELETE /api/products/:id)
 export const deleteProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -93,7 +106,6 @@ export const deleteProduct = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Product not found for deletion." });
     }
 
-    // Trả về 204 No Content (hoặc 200 OK với thông báo)
     res.status(200).json({ message: "Product deleted successfully." });
   } catch (err: any) {
     res.status(500).json({ error: "Failed to delete product." });
