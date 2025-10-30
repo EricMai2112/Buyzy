@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
+import Toast from "react-native-toast-message";
 
 import HomeScreen from "./screens/HomeScreen";
 import CategoryScreen from "./screens/CategoryScreen";
@@ -86,6 +87,7 @@ export default function App() {
             <Stack.Screen name="Success" component={SuccessScreen} />
             <Stack.Screen name="Feedback" component={FeedbackScreen} />
           </Stack.Navigator>
+          <Toast />
         </NavigationContainer>
       </SafeAreaProvider>
     </AuthProvider>

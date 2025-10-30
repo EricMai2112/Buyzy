@@ -16,6 +16,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { addToCart } from "../api/cartApi";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
+import Toast from "react-native-toast-message";
 
 type ProductWithVariants = Product & {
   variants?: {
@@ -103,7 +104,8 @@ export default function ProductDetailScreen() {
 
     try {
       await addToCart(product._id, 1, selectedColor, selectedSize);
-      Alert.alert("Thành công", `${product.name} đã được thêm vào giỏ hàng!`);
+      // Alert.alert("Thành công", `${product.name} đã được thêm vào giỏ hàng!`);
+      Toast.show({ type: "success", text1: "Thêm vào giỏ hàng thành công!" });
     } catch (e) {
       Alert.alert("Lỗi", "Không thể thêm sản phẩm vào giỏ hàng.");
     }

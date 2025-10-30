@@ -10,6 +10,7 @@ import {
   Alert,
   TouchableOpacity,
   FlatList,
+  Image,
 } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import RNPickerSelect from "react-native-picker-select";
@@ -24,6 +25,7 @@ import {
 } from "../api/api";
 import { Product } from "../types";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 export default function AdminProductScreen({ navigation }: any) {
   const [name, setName] = useState("");
@@ -51,10 +53,8 @@ export default function AdminProductScreen({ navigation }: any) {
   }, [userRole]);
 
   useEffect(() => {
-    // Tải sản phẩm
     loadProducts();
 
-    // Tải Categories
     setLoadingCategories(true);
     fetchCategories()
       .then((data) => {
@@ -68,6 +68,7 @@ export default function AdminProductScreen({ navigation }: any) {
       })
       .finally(() => setLoadingCategories(false));
   }, [loadProducts]);
+
   const handleSaveProduct = async () => {
     if (!name || !price || !imageUrl || !categoryId) {
       Alert.alert(
@@ -100,18 +101,20 @@ export default function AdminProductScreen({ navigation }: any) {
       let successMessage = "";
 
       if (isEditing && currentProductId) {
-        // UPDATE
         await updateProductApi(currentProductId, productData, userId);
         Alert.alert("Thành công", `Sản phẩm đã được cập nhật.`);
       } else {
-        // CREATE
         await createProductApi(productData, userId);
         Alert.alert("Thành công", `Sản phẩm '${name}' đã được thêm.`);
       }
 
       Alert.alert("Thành công", `Sản phẩm '${name}' đã được thêm.`);
 
-      loadProducts();
+      navigation.navigate("MainTabs", {
+        screen: "Home",
+        params: { shouldRefresh: true },
+      });
+
       resetForm();
     } catch (error: any) {
       Alert.alert("Lỗi", error.message || "Không thể thêm sản phẩm.");
@@ -124,7 +127,6 @@ export default function AdminProductScreen({ navigation }: any) {
     setIsEditing(true);
     setCurrentProductId(product._id as string);
     setName(product.name);
-    // ✅ ÉP KIỂU SANG STRING:
     setPrice(product.price.toString());
     setImageUrl(product.image_url || "");
     setRating(product.rating?.toString() || "");
@@ -134,7 +136,7 @@ export default function AdminProductScreen({ navigation }: any) {
 
   const handleDeletePress = (productId: string, productName: string) => {
     if (userRole !== "admin" || !userId) {
-      /* ... */ return;
+      return;
     }
 
     Alert.alert(
@@ -149,7 +151,10 @@ export default function AdminProductScreen({ navigation }: any) {
             try {
               await deleteProductApi(productId, userId);
               Alert.alert("Thông báo", "Sản phẩm đã được xóa.");
-              loadProducts(); // Tải lại danh sách
+              navigation.navigate("MainTabs", {
+                screen: "Home",
+                params: { shouldRefresh: true },
+              });
             } catch (e: any) {
               Alert.alert("Lỗi", e.message || "Không thể xóa sản phẩm.");
             }
@@ -176,6 +181,11 @@ export default function AdminProductScreen({ navigation }: any) {
 
   const ProductListItem = ({ item }: { item: Product }) => (
     <View style={localStyles.listItem}>
+      <Image
+        source={{ uri: item.image_url }}
+        style={{ width: 50, height: 50, borderRadius: 8, marginRight: 5 }}
+        resizeMode="cover"
+      />
       <Text style={localStyles.listItemText}>{item.name}</Text>
       <Text style={localStyles.listItemPrice}>${item.price.toFixed(2)}</Text>
       <View style={localStyles.listItemActions}>
@@ -204,7 +214,6 @@ export default function AdminProductScreen({ navigation }: any) {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Thêm Sản Phẩm Mới</Text>
 
-        {/* Tên Sản Phẩm */}
         <TextInput
           label="Tên Sản Phẩm"
           value={name}
@@ -212,7 +221,6 @@ export default function AdminProductScreen({ navigation }: any) {
           style={styles.input}
         />
 
-        {/* Danh Mục (Picker) */}
         <Text style={styles.label}>Danh Mục</Text>
         <View style={styles.pickerContainer}>
           {loadingCategories ? (
@@ -228,7 +236,6 @@ export default function AdminProductScreen({ navigation }: any) {
           )}
         </View>
 
-        {/* Giá */}
         <TextInput
           label="Giá"
           value={price}
@@ -237,7 +244,6 @@ export default function AdminProductScreen({ navigation }: any) {
           style={styles.input}
         />
 
-        {/* URL Ảnh */}
         <TextInput
           label="URL Hình Ảnh"
           value={imageUrl}
@@ -245,7 +251,6 @@ export default function AdminProductScreen({ navigation }: any) {
           style={styles.input}
         />
 
-        {/* Rating (Optional) */}
         <TextInput
           label="Đánh Giá (Rating)"
           value={rating}
@@ -254,7 +259,6 @@ export default function AdminProductScreen({ navigation }: any) {
           style={styles.input}
         />
 
-        {/* Review Count (Optional) */}
         <TextInput
           label="Số Lượng Đánh Giá"
           value={reviewCount}
@@ -263,7 +267,6 @@ export default function AdminProductScreen({ navigation }: any) {
           style={styles.input}
         />
 
-        {/* Nút Thêm Sản Phẩm */}
         <Button
           mode="contained"
           onPress={handleSaveProduct}
@@ -280,7 +283,6 @@ export default function AdminProductScreen({ navigation }: any) {
           data={products}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => <ProductListItem item={item} />}
-          scrollEnabled={false}
           ListEmptyComponent={
             <Text style={{ textAlign: "center" }}>Chưa có sản phẩm nào.</Text>
           }

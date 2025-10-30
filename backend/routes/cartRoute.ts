@@ -9,8 +9,8 @@ import {
 const router = express.Router();
 
 router.get("/", getCarts);
-router.post("/add", addToCart); // ⬅️ CẦN THÊM
-router.put("/update/:productId", updateCartItem); // ⬅️ CẦN THÊM
-router.delete("/clear", clearCart); // ⬅️ CẦN THÊM
+router.post("/add", addToCart);
+router.put("/update/:productId", updateCartItem);
+router.delete("/clear", clearCart);
 
 export default router;

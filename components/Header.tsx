@@ -20,7 +20,7 @@ export default function Header({
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.left}>
+      <TouchableOpacity style={styles.left} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back" size={22} color="white" />
       </TouchableOpacity>
 

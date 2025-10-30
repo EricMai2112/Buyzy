@@ -50,25 +50,29 @@ export default function AccountScreen() {
       </View>
 
       <View style={styles.menuContainer}>
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons
-            name="settings-outline"
-            size={24}
-            color="#666"
-            style={styles.menuIcon}
-          />
-          <Text style={styles.menuText}>Cài đặt tài khoản</Text>
-        </TouchableOpacity>
+        {userId && (
+          <View>
+            <TouchableOpacity style={styles.menuItem}>
+              <Ionicons
+                name="settings-outline"
+                size={24}
+                color="#666"
+                style={styles.menuIcon}
+              />
+              <Text style={styles.menuText}>Cài đặt tài khoản</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons
-            name="help-circle-outline"
-            size={24}
-            color="#666"
-            style={styles.menuIcon}
-          />
-          <Text style={styles.menuText}>Hỗ trợ & Trợ giúp</Text>
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem}>
+              <Ionicons
+                name="help-circle-outline"
+                size={24}
+                color="#666"
+                style={styles.menuIcon}
+              />
+              <Text style={styles.menuText}>Hỗ trợ & Trợ giúp</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {userId && (
           <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
@@ -108,7 +112,7 @@ export default function AccountScreen() {
             ></View>
             <TouchableOpacity style={styles.menuItem} onPress={handleLogin}>
               <Ionicons
-                name="person-add"
+                name="person-add-outline"
                 size={24}
                 color="#e74c3c"
                 style={styles.menuIcon}

@@ -165,7 +165,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 8,
   },
-  // ✅ STYLE CHO VARIANTS
   variantText: {
     fontSize: 12,
     color: "#888",

@@ -73,8 +73,14 @@ export default function HomeScreen() {
   }, []);
 
   useEffect(() => {
+    const { shouldRefresh } = route.params ?? {};
     loadData();
-  }, [loadData]);
+    if (shouldRefresh) {
+      loadData();
+
+      navigation.setParams({ shouldRefresh: false });
+    }
+  }, [route.params?.shouldRefresh, loadData, navigation]);
 
   useEffect(() => {
     const filters = route.params?.filters as PriceFilters;
