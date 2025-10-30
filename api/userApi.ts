@@ -28,3 +28,19 @@ export async function login(
     throw new Error("Không thể kết nối đến máy chủ API. Kiểm tra IP.");
   }
 }
+export async function register(
+  email: string,
+  password: string
+): Promise<UserData> {
+  const response = await fetch(`${API_BASE_URL}/users`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Đăng ký thất bại.");
+  }
+  return response.json();
+}

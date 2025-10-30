@@ -62,18 +62,28 @@ export default function LoginScreen() {
           style={{ backgroundColor: "white" }}
         />
 
-        <Button
-          mode="contained"
-          buttonColor="#ee4d2d"
-          onPress={handleLogin}
-          style={{ padding: 10, marginTop: 30 }}
-          disabled={loading}
-          loading={loading}
-        >
-          <Text style={{ fontWeight: "bold", fontSize: 15 }}>
-            {loading ? "Đang xử lý..." : "Đăng nhập"}
-          </Text>
-        </Button>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <Button
+            mode="contained"
+            buttonColor="#ee4d2d"
+            onPress={handleLogin}
+            style={{ padding: 10, marginTop: 30 }}
+            disabled={loading}
+            loading={loading}
+          >
+            <Text style={{ fontWeight: "bold", fontSize: 15 }}>
+              {loading ? "Đang xử lý..." : "Đăng nhập"}
+            </Text>
+          </Button>
+          <Button
+            mode="contained"
+            buttonColor="#ee4d2d"
+            onPress={() => navigation.replace("Register")}
+            style={{ padding: 10, marginTop: 30 }}
+          >
+            <Text style={{ fontWeight: "bold", fontSize: 15 }}>Đăng ký</Text>
+          </Button>
+        </View>
       </View>
     </View>
   );

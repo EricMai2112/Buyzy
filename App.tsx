@@ -20,6 +20,7 @@ import { AuthProvider } from "./context/AuthContext";
 import AccountScreen from "./screens/AccountScreen";
 import AdminProductScreen from "./screens/AdminProductScreen";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import RegisterScreen from "./screens/RegisterScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -77,6 +78,7 @@ export default function App() {
               component={AdminProductScreen}
             />
             <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="Filter" component={FilterScreen} />
             <Stack.Screen
               name="ProductDetail"

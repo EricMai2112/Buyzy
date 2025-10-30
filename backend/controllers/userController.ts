@@ -7,11 +7,26 @@ export const getUsers = async (_: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
+  if (!req.body.name) {
+    req.body.name = req.body.email ? req.body.email.split("@")[0] : "New User";
+  }
   try {
     const user = await User.create(req.body);
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ error: err });
+
+    return res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    });
+  } catch (err: any) {
+    if (err.code === 11000) {
+      return res
+        .status(400)
+        .json({ error: "Email đã tồn tại. Vui lòng đăng nhập." });
+    }
+    console.error("Error creating user:", err);
+    res.status(500).json({ error: "Lỗi Server khi đăng ký." });
   }
 };
 

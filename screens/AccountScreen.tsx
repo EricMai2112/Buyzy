@@ -110,7 +110,10 @@ export default function AccountScreen() {
             <View
               style={{ height: 30, width: 1, backgroundColor: "#e74c3c" }}
             ></View>
-            <TouchableOpacity style={styles.menuItem} onPress={handleLogin}>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => navigation.replace("Register")}
+            >
               <Ionicons
                 name="person-add-outline"
                 size={24}
