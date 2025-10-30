@@ -13,10 +13,10 @@ import Header from "../components/Header";
 import { fetchProductById } from "../api/api";
 import { Product } from "../types";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { addToCart } from "../api/cartApi"; // ⬅️ API (Giả định đã cập nhật)
+import { addToCart } from "../api/cartApi";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useAuth } from "../context/AuthContext";
 
-// Giả định Product type được mở rộng để bao gồm variants
 type ProductWithVariants = Product & {
   variants?: {
     colors?: string[];
@@ -24,7 +24,6 @@ type ProductWithVariants = Product & {
   };
 };
 
-// Component đơn giản để hiển thị Variant Chip
 const VariantChip = ({
   title,
   selected,
@@ -52,11 +51,16 @@ const VariantChip = ({
 export default function ProductDetailScreen() {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
+  const { userId, userName, logout } = useAuth();
+
+  const handleLogin = () => {
+    navigation.replace("Login");
+  };
+
   const [product, setProduct] = useState<ProductWithVariants | null>(
     route.params?.product ?? null
   );
 
-  // ✅ TRẠNG THÁI MỚI: Lưu lựa chọn Variants
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
@@ -71,7 +75,6 @@ export default function ProductDetailScreen() {
     })();
   }, [route.params?.productId]);
 
-  // Thiết lập Variants mặc định khi sản phẩm được tải
   useEffect(() => {
     if (product?.variants) {
       if (product.variants.colors?.length && !selectedColor) {
@@ -83,7 +86,6 @@ export default function ProductDetailScreen() {
     }
   }, [product, selectedColor, selectedSize]);
 
-  // Hàm kiểm tra variants đã được chọn chưa
   const validateVariants = (): boolean => {
     if (product?.variants?.colors && !selectedColor) {
       Alert.alert("Lỗi", "Vui lòng chọn Màu sắc.");
@@ -100,8 +102,6 @@ export default function ProductDetailScreen() {
     if (!product || !product._id || !validateVariants()) return;
 
     try {
-      // ✅ GỌI API THÊM VÀO GIỎ HÀNG VÀ TRUYỀN VARIANTS
-      // Backend/Cart Model phải được cập nhật để lưu Color/Size
       await addToCart(product._id, 1, selectedColor, selectedSize);
       Alert.alert("Thành công", `${product.name} đã được thêm vào giỏ hàng!`);
     } catch (e) {
@@ -112,7 +112,6 @@ export default function ProductDetailScreen() {
   const handleBuyNow = () => {
     if (!product || !validateVariants()) return;
 
-    // ✅ TRUYỀN VARIANTS ĐÃ CHỌN ĐI CHECKOUT (Buy Now flow)
     navigation.navigate("Checkout", {
       product,
       selectedVariants: { selectedColor, selectedSize },
@@ -148,7 +147,7 @@ export default function ProductDetailScreen() {
   );
 
   return (
-    <SafeAreaProvider style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <Header
         title={product.name}
         onCartPress={() => navigation.navigate("Cart")}
@@ -209,15 +208,29 @@ export default function ProductDetailScreen() {
         </View>
       </ScrollView>
 
-      <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.cartBtn} onPress={handleAddToCart}>
-          <Text style={{ color: "#fff", fontWeight: "700" }}>Add to Cart</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buyBtn} onPress={handleBuyNow}>
-          <Text style={{ color: "#fff", fontWeight: "700" }}>Buy Now</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaProvider>
+      {userId && (
+        <View style={styles.bottomBar}>
+          <TouchableOpacity style={styles.cartBtn} onPress={handleAddToCart}>
+            <Text style={{ color: "#fff", fontWeight: "700" }}>
+              Add to Cart
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buyBtn} onPress={handleBuyNow}>
+            <Text style={{ color: "#fff", fontWeight: "700" }}>Buy Now</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      {!userId && (
+        <View style={styles.bottomBar}>
+          <TouchableOpacity style={styles.cartBtn} onPress={handleLogin}>
+            <Text style={{ color: "#fff", fontWeight: "700" }}>Đăng nhập</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buyBtn} onPress={handleLogin}>
+            <Text style={{ color: "#fff", fontWeight: "700" }}>Đăng ký</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </SafeAreaView>
   );
 }
 
@@ -227,7 +240,6 @@ const styles = StyleSheet.create({
     padding: 12,
     borderTopWidth: 1,
     borderColor: "#eee",
-    backgroundColor: "#fff",
   },
   cartBtn: {
     flex: 1,

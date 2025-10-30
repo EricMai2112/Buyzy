@@ -33,6 +33,10 @@ export default function AccountScreen() {
     ]);
   };
 
+  const handleLogin = () => {
+    navigation.replace("Login");
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
@@ -41,7 +45,7 @@ export default function AccountScreen() {
 
       <View style={styles.profileContainer}>
         <Image source={{ uri: defaultAvatarUrl }} style={styles.avatar} />
-        <Text style={styles.userName}>{userName || "Guest User"}</Text>
+        <Text style={styles.userName}>{userName || "Guest"}</Text>
         <Text style={styles.userId}>ID: {userId || "N/A"}</Text>
       </View>
 
@@ -66,15 +70,55 @@ export default function AccountScreen() {
           <Text style={styles.menuText}>Hỗ trợ & Trợ giúp</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
-          <Ionicons
-            name="log-out-outline"
-            size={24}
-            color="#e74c3c"
-            style={styles.menuIcon}
-          />
-          <Text style={[styles.menuText, { color: "#e74c3c" }]}>Đăng Xuất</Text>
-        </TouchableOpacity>
+        {userId && (
+          <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
+            <Ionicons
+              name="log-out-outline"
+              size={24}
+              color="#e74c3c"
+              style={styles.menuIcon}
+            />
+            <Text style={[styles.menuText, { color: "#e74c3c" }]}>
+              Đăng xuất
+            </Text>
+          </TouchableOpacity>
+        )}
+        {!userId && (
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: 10,
+            }}
+          >
+            <TouchableOpacity style={styles.menuItem} onPress={handleLogin}>
+              <Ionicons
+                name="log-in-outline"
+                size={24}
+                color="#e74c3c"
+                style={styles.menuIcon}
+              />
+              <Text style={[styles.menuText, { color: "#e74c3c" }]}>
+                Đăng nhập
+              </Text>
+            </TouchableOpacity>
+            <View
+              style={{ height: 30, width: 1, backgroundColor: "#e74c3c" }}
+            ></View>
+            <TouchableOpacity style={styles.menuItem} onPress={handleLogin}>
+              <Ionicons
+                name="person-add"
+                size={24}
+                color="#e74c3c"
+                style={styles.menuIcon}
+              />
+              <Text style={[styles.menuText, { color: "#e74c3c" }]}>
+                Đăng ký
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -89,13 +133,14 @@ const styles = StyleSheet.create({
     height: 60,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#ee4d2d",
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: "bold",
+    color: "white",
   },
   profileContainer: {
     alignItems: "center",

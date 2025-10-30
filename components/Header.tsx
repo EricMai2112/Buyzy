@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../context/AuthContext";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Header({
   title,
@@ -9,6 +11,13 @@ export default function Header({
   title?: string;
   onCartPress?: () => void;
 }) {
+  const { userId, userName, logout } = useAuth();
+  const navigation = useNavigation<any>();
+
+  const handleLogin = () => {
+    navigation.replace("Login");
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.left}>
@@ -18,16 +27,24 @@ export default function Header({
       <Text style={styles.title}>{title}</Text>
 
       <View style={styles.rightGroup}>
-        <TouchableOpacity onPress={onCartPress} style={styles.cartBtn}>
+        <TouchableOpacity
+          onPress={userId ? onCartPress : handleLogin}
+          style={styles.cartBtn}
+        >
           <Ionicons name="cart-outline" size={26} color="#fff" />
         </TouchableOpacity>
 
-        <View style={styles.avatarWrap}>
-          <Image
-            source={{ uri: "https://i.pravatar.cc/100" }}
-            style={styles.avatar}
-          />
-        </View>
+        {userId && (
+          <View style={styles.avatarWrap}>
+            <Image
+              source={{ uri: "https://i.pravatar.cc/100" }}
+              style={styles.avatar}
+            />
+          </View>
+        )}
+        {!userId && (
+          <Text style={{ color: "white", fontWeight: "bold" }}>Guest</Text>
+        )}
       </View>
     </View>
   );
