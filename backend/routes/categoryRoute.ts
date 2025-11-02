@@ -7,10 +7,8 @@ import {
 
 const router = express.Router();
 
-// GET /api/categories: Lấy tất cả danh mục
 router.get("/", getCategories);
 
-// POST /api/categories: Tạo danh mục mới
 router.post("/", createCategory);
 
 export default router;

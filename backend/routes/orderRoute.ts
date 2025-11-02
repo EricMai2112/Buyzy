@@ -4,12 +4,12 @@ import {
   getOrders,
   createOrder,
   getOrdersByUserId,
-} from "../controllers/orderController"; // ⬅️ IMPORT createOrder
+} from "../controllers/orderController";
 
 const router = express.Router();
 
 router.get("/", getOrders);
-router.post("/", createOrder); // POST: Tạo đơn hàng mới
+router.post("/", createOrder);
 router.get("/:userId", getOrdersByUserId);
 
 export default router;

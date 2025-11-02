@@ -1,6 +1,6 @@
 import { Product } from "../types";
 
-const BASE = "http://192.168.1.104:5000/api";
+const BASE = "http://172.20.10.2:5000/api";
 export interface ProductCreateData {
   name: string;
   category_id: string;
