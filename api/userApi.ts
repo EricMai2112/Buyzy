@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://172.20.10.2:5000/api";
+const API_BASE_URL = "http://192.168.0.103:5000/api";
 
 export interface UserData {
   _id: string;
