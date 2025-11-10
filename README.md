@@ -1,8 +1,8 @@
-HƯỚNG DẪN CÀI ĐẶT VÀ TRIỂN KHAI HỆ THỐNG
+# HƯỚNG DẪN CÀI ĐẶT VÀ TRIỂN KHAI HỆ THỐNG
 
 Tài liệu này cung cấp các bước chi tiết để cài đặt môi trường phát triển cục bộ và triển khai ứng dụng lên môi trường Production (Railway cho Backend và EAS cho Mobile).
 
-I. YÊU CẦU PHẦN CỨNG & PHẦN MỀM
+# I. YÊU CẦU PHẦN CỨNG & PHẦN MỀM
 
 Hệ điều hành: Windows 10/11, macOS
 Node.js: Phiên bản 20.x (hoặc mới hơn)
@@ -11,7 +11,7 @@ MongoDB: MongoDB Atlas
 IDE: Visual Code
 Công cụ CLI: Expo CLI, EAS CLI
 
-II. CÀI ĐẶT MÔI TRƯỜNG PHÁT TRIỂN CỤC BỘ
+# II. CÀI ĐẶT MÔI TRƯỜNG PHÁT TRIỂN CỤC BỘ
 
 1. Chuẩn bị Code
 Clone Repository về máy tính của bạn:
@@ -36,7 +36,7 @@ npx expo start
 Sử dụng ứng dụng Expo Go trên điện thoại để quét mã QR và chạy ứng dụng.
 Hoặc npx expo start --web để có thể chạy trên web nhưng phải đổi sang hiển thị điện thoại (Pixel 7)
 
-III. HƯỚNG DẪN TRIỂN KHAI LÊN PRODUCTION
+# III. HƯỚNG DẪN TRIỂN KHAI LÊN PRODUCTION
 
 Việc triển khai được chia thành hai luồng chính: Backend (API) và Frontend (Mobile Build).
 1. Triển khai Backend API (Sử dụng Railway)
