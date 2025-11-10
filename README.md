@@ -28,7 +28,7 @@ npm install
 A. Khởi động Backend (Development Mode):
 Trong thư mục Backend, chạy lệnh:
 npm run dev
-# Lệnh này sử dụng ts-node-dev để tự động khởi động lại server khi code thay đổi.
+Lệnh này sử dụng ts-node-dev để tự động khởi động lại server khi code thay đổi.
 Server sẽ chạy trên cổng 5000 (hoặc cổng được chỉ định).
 B. Khởi động Frontend App:
 Trong thư mục Buyzy, chạy lệnh:
