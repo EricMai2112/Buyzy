@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_BASE_URL = "http://192.168.0.103:5000/api";
+const API_BASE_URL = "https://buyzy-production.up.railway.app/api";
 
 export type Category = {
   _id: string;

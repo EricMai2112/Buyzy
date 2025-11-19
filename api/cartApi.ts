@@ -7,7 +7,7 @@ interface UpdateCartItemParams {
   color?: string;
   size?: string;
 }
-const API_BASE_URL = "http://192.168.0.103:5000/api";
+const API_BASE_URL = "https://buyzy-production.up.railway.app/api";
 
 export async function fetchCartItems(): Promise<CartItem[]> {
   try {

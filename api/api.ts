@@ -1,6 +1,6 @@
 import { Product } from "../types";
 
-const BASE = "http://192.168.0.103:5000/api";
+const BASE = "https://buyzy-production.up.railway.app/api";
 export interface ProductCreateData {
   name: string;
   category_id: string;
